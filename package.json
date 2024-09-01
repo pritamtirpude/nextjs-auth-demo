@@ -13,6 +13,7 @@
     "@neondatabase/serverless": "^0.9.4",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-slot": "^1.1.0",
+    "@radix-ui/react-toast": "^1.2.1",
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -24,6 +25,7 @@
     "lucide-react": "^0.436.0",
     "next": "14.2.6",
     "next-auth": "^5.0.0-beta.20",
+    "nodemailer": "^6.9.14",
     "prettier": "^3.3.3",
     "react": "^18",
     "react-dom": "^18",
@@ -35,6 +37,7 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
+    "@types/nodemailer": "^6.4.15",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "drizzle-kit": "^0.24.2",
