@@ -32,7 +32,7 @@ export const get2faSecret = async () => {
 
   let twoFactorSecret = user.twoFactorSecret;
 
-  if (twoFactorSecret) {
+  if (!twoFactorSecret) {
     twoFactorSecret = authenticator.generateSecret();
 
     await db
@@ -50,4 +50,47 @@ export const get2faSecret = async () => {
       twoFactorSecret!
     ),
   };
+};
+
+export const activate2fa = async (token: string) => {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return {
+      error: true,
+      message: "Unauthorized",
+    };
+  }
+
+  const [user] = await db
+    .select({
+      twoFactorSecret: users.twoFactorSecret,
+    })
+    .from(users)
+    .where(eq(users.id, parseInt(session?.user?.id)));
+
+  if (!user) {
+    return {
+      error: true,
+      message: "User not found",
+    };
+  }
+
+  if (user.twoFactorSecret) {
+    const tokenValid = authenticator.check(token, user.twoFactorSecret);
+
+    if (!tokenValid) {
+      return {
+        error: true,
+        message: "Invalid OTP",
+      };
+    }
+
+    await db
+      .update(users)
+      .set({
+        twoFactorActivated: true,
+      })
+      .where(eq(users.id, parseInt(session.user.id)));
+  }
 };

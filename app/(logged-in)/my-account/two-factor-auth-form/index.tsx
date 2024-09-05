@@ -1,10 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { get2faSecret } from "./action";
 import { useToast } from "@/hooks/use-toast";
 import { QRCodeSVG } from "qrcode.react";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 type TwoFactorActivatedProps = {
   twoFactorActivated: boolean;
@@ -16,6 +22,7 @@ function TwoFactorAuthForm({ twoFactorActivated }: TwoFactorActivatedProps) {
   const [isActivated, setIsActivated] = useState(twoFactorActivated);
   const [step, setStep] = useState(1);
   const [code, setCode] = useState("");
+  const [otp, setOtp] = useState("");
 
   const handleEnableClick = async () => {
     const response = await get2faSecret();
@@ -30,6 +37,10 @@ function TwoFactorAuthForm({ twoFactorActivated }: TwoFactorActivatedProps) {
 
     setStep(2);
     setCode(response?.twoFactorSecret ?? "");
+  };
+
+  const handleOTPSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
   };
 
   return (
@@ -59,6 +70,31 @@ function TwoFactorAuthForm({ twoFactorActivated }: TwoFactorActivatedProps) {
                 Cancel
               </Button>
             </div>
+          )}
+          {step === 3 && (
+            <form onSubmit={handleOTPSubmit} className="flex flex-col gap-2">
+              <p className="text-xs text-muted-foreground">
+                Please enter the one-time passcode from the Google Authenticator
+                app.
+              </p>
+              <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                </InputOTPGroup>
+                <InputOTPSeparator />
+                <InputOTPGroup>
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
+              <Button type="submit">Submit and activate</Button>
+              <Button onClick={() => setStep(2)} variant="outline">
+                Cancel
+              </Button>
+            </form>
           )}
         </div>
       )}
